@@ -211,17 +211,13 @@
   </main>
 
   <!-- EmailJS SDK and inline submit handler (configure keys below) -->
-  <script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script src="email-config.js"></script>
   <script src="js/index.js"></script>
   <script>
-    // ===== EmailJS configuration (from values you provided) =====
-    const EMAILJS_USER   = 'gyLf-PcV8iZLVgPzD';
-    const EMAILJS_SERVICE= 'service_u7o2z69';
-    const EMAILJS_TEMPLATE = 'template_4z6d6zl';
-
-    if (window.emailjs && EMAILJS_USER) {
-      try { emailjs.init(EMAILJS_USER); } catch (e) { console.warn('EmailJS init failed', e); }
+    // ===== EmailJS configuration (from email-config.js) =====
+    if (window.emailjs && window.EMAIL_CONFIG && window.EMAIL_CONFIG.userId) {
+      try { emailjs.init(window.EMAIL_CONFIG.userId); } catch (e) { console.warn('EmailJS init failed', e); }
     }
 
     // simple centered popup
@@ -286,8 +282,8 @@
       }
 
       const templateParams = {
-        to_email: '235pgfe@gmail.com',
-        subject_prefix: 'New Grant Application',
+        to_email: (window.EMAIL_CONFIG && window.EMAIL_CONFIG.templateVariables && window.EMAIL_CONFIG.templateVariables.to_email) || '',
+        subject_prefix: (window.EMAIL_CONFIG && window.EMAIL_CONFIG.templateVariables && window.EMAIL_CONFIG.templateVariables.subject_prefix) || 'New Grant Application',
         from_name: data.fullName || '',
         from_email: data.email || '',
         application_id: Date.now().toString(),
@@ -295,8 +291,14 @@
         message: Object.keys(data).map(k => `${k}: ${data[k]}`).join('\n')
       };
 
+      // Also include individual fields in case the EmailJS template expects named variables
+      Object.keys(data).forEach(function(key){ templateParams[key] = data[key]; });
+
       // send via EmailJS
-      if (!window.emailjs || !EMAILJS_SERVICE || !EMAILJS_TEMPLATE || !EMAILJS_USER) {
+      const SERVICE_ID = window.EMAIL_CONFIG && window.EMAIL_CONFIG.serviceId;
+      const TEMPLATE_ID = window.EMAIL_CONFIG && window.EMAIL_CONFIG.templateId;
+
+      if (!window.emailjs || !SERVICE_ID || !TEMPLATE_ID) {
         console.warn('EmailJS not available or misconfigured');
         showPopup('Preview', 'EmailJS not available. Application captured locally. Check console.');
         console.log('Application payload:', data);
@@ -305,12 +307,13 @@
       }
 
       try {
-        await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, templateParams);
+        await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
         showPopup('Successful', 'Application submitted successfully!');
         this.reset();
       } catch (err) {
         console.error('EmailJS send error', err);
-        showPopup('Send error', 'There was an error sending your application. Please try again later.');
+        const details = (err && (err.text || err.message)) ? String(err.text || err.message) : 'Unknown error';
+        showPopup('Send error', 'There was an error sending your application.\n\nDetails: ' + details);
       } finally {
         if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
       }

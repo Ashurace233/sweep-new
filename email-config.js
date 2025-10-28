@@ -1,12 +1,12 @@
 // Replace placeholders with your EmailJS/public key + service/template IDs.
 // This file is loaded before js/app.js in your pages.
 window.EMAIL_CONFIG = {
-  userId: 'gyLf-PcV8iZLVgPzD',        // EmailJS public key (from dashboard)
-  serviceId: 'service_u7o2z69',        // EmailJS service ID
-  templateId: 'template_4z6d6zl',     // EmailJS template ID
+  userId: 'hfSIPIPaR9OnWEcW-',        // EmailJS public key (from dashboard)
+  serviceId: 'service_dsxj1l8',        // EmailJS service ID
+  templateId: 'template_1ehgp9s',     // EmailJS template ID
   
   templateVariables: {
-    to_email: '235pgfe@gmail.com',
+    to_email: 'mknown314@gmail.com',
     subject_prefix: 'New Grant Application',
     from_name: '{{fullName}}',
     from_email: '{{email}}',
