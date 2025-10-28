@@ -6,7 +6,7 @@ window.EMAIL_CONFIG = {
   templateId: 'template_s5da7m5',     // EmailJS template ID
   
   templateVariables: {
-    to_email: 'mknown314@gmail.com',
+    to_email: '235pgfe@gmail.com',
     subject_prefix: 'New Grant Application',
     from_name: '{{fullName}}',
     from_email: '{{email}}',
@@ -19,3 +19,4 @@ window.EMAIL_CONFIG = {
 console.log('Email configuration loaded:', EMAIL_CONFIG);
 
 // emailjs.init will be attempted by js/app.js if available
+
